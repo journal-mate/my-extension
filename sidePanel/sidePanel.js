@@ -19,5 +19,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function activate(btn1, btn2) {
     btn1.style.backgroundColor = '#007bff';
-    btn2.style.backgroundColor = '';
+    btn2.style.backgroundColor = '#888888';
 }

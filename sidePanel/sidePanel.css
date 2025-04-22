@@ -1,0 +1,41 @@
+#btn1 {
+    background-color: #007bff;
+}
+
+#btn2 {
+    background-color: #888888;
+}
+
+#btn3 {
+    width: 100%;
+    max-width: 500px;
+    background-color: darkslateblue;
+    color: white;
+}
+
+#t1 {
+}
+
+.t11 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.t11 input {
+    width: 80%;
+    border: 1px solid black;
+    padding: 8px;
+}
+
+.t21 {
+}
+
+#t2 {
+    display: none;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+}
