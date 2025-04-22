@@ -21,3 +21,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     return true;
 });
+
+// 사이드 패널 열기
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.sidePanel.setPanelBehavior({
+        openPanelOnActionClick: true,
+    });
+});
