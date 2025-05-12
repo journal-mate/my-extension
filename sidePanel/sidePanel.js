@@ -1,5 +1,5 @@
 const pdfjsLib = window['pdfjsLib'];
-pdfjsLib.GlobalWorkerOptions.workerSrc = ''; // 워커 완전 비활성화
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const btn1 = document.getElementById('btn1'); // 단순 요약
@@ -119,8 +119,8 @@ function extractTextFromPDF(file) {
                 textPromises.push(
                     pdf.getPage(pageNum).then((page) =>
                         page.getTextContent().then((content) => {
-                            const text = content.items.map((item) => item.str).join(''); // 공백 없이 글자만 붙임
-                            return text.replace(/\s+/g, ' ').trim(); // 과도한 공백 제거
+                            const text = content.items.map((item) => item.str).join('');
+                            return text.replace(/\s+/g, ' ').trim();
                         })
                     )
                 );
