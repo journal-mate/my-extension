@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Thesis Translation EXTENSION",
+    "name": "The Translation EXTENSION",
     "description": "창의설계프로젝트1 확장 프로그램 개발",
     "version": "1.0",
 
@@ -8,7 +8,7 @@
         "128": "images/logo.png"
     },
 
-    "permissions": ["scripting", "activeTab", "sidePanel"],
+    "permissions": ["scripting", "activeTab", "sidePanel", "notifications"],
 
     "action": {
         "default_title": "PaperMate 요약 열기"
