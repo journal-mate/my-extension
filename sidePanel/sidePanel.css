@@ -9,7 +9,7 @@ body {
 h2 {
     text-align: center;
     color: #4a90e2;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 /* ===== 버튼 공통 스타일 ===== */
@@ -62,7 +62,7 @@ button {
     border-radius: 8px;
     padding: 14px;
     font-size: 18px;
-    margin-top: 24px;
+    margin-top: 8px;
 }
 
 /* 요약 버튼 호버 시 색상 변화 */
@@ -144,14 +144,30 @@ button {
 }
 
 /* ===== 요약 결과 영역 ===== */
+#summary-title {
+    padding: -10px;
+    margin: -10px;
+}
+
 .result-container {
     background-color: #ffffff;
-    padding: 16px;
+    padding: 4px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 32px;
-    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    text-align: left;
     color: #333;
+    max-height: 400px;
+    overflow-y: auto;
+    line-height: 1.4;
+    font-size: 15px;
+    white-space: pre-wrap;
+    color: black;
+}
+
+.result-container::-webkit-scrollbar {
+    width: 6px;
 }
 
 /* ===== 토스트 ===== */

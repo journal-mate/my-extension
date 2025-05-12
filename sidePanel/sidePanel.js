@@ -117,13 +117,15 @@ function extractTextFromPDF(file) {
             let textPromises = [];
             for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                 textPromises.push(
-                    pdf
-                        .getPage(pageNum)
-                        .then((page) =>
-                            page.getTextContent().then((content) => content.items.map((item) => item.str).join(' '))
-                        )
+                    pdf.getPage(pageNum).then((page) =>
+                        page.getTextContent().then((content) => {
+                            const text = content.items.map((item) => item.str).join(''); // 공백 없이 글자만 붙임
+                            return text.replace(/\s+/g, ' ').trim(); // 과도한 공백 제거
+                        })
+                    )
                 );
             }
+
             Promise.all(textPromises).then((pagesText) => {
                 const fullText = pagesText.join('\n');
                 document.getElementById('result-text').textContent = fullText;
