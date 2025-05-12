@@ -1,5 +1,6 @@
 const pdfjsLib = window['pdfjsLib'];
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
+// pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 
 document.addEventListener('DOMContentLoaded', () => {
     const btn1 = document.getElementById('btn1'); // 단순 요약

@@ -164,10 +164,17 @@ button {
     font-size: 15px;
     white-space: pre-wrap;
     color: black;
+    overflow-x: hidden;
+    word-wrap: break-word;
 }
 
 .result-container::-webkit-scrollbar {
     width: 6px;
+}
+
+.result-container::-webkit-scrollbar-thumb {
+    background-color: #4a90e2;
+    border-radius: 3px;
 }
 
 /* ===== 토스트 ===== */
