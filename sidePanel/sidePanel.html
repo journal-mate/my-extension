@@ -8,11 +8,20 @@
         <link rel="stylesheet" href="sidePanel.css" />
     </head>
     <body>
+        <!-- 요약 종류 -->
         <div class="button-group">
             <button id="btn1">단순 요약</button>
             <button id="btn2">비교 요약</button>
         </div>
 
+        <!-- 요약 정도 -->
+        <div class="summary-toggle-group">
+            <button class="summary-toggle active" data-value="short">짧게</button>
+            <button class="summary-toggle" data-value="normal">보통</button>
+            <button class="summary-toggle" data-value="long">길게</button>
+        </div>
+
+        <!-- 입력 -->
         <div id="t1">
             <h2>url 입력</h2>
             <div class="t11">
@@ -41,6 +50,7 @@
 
         <br /><br />
 
+        <!-- 요약 버튼 -->
         <div class="center-container">
             <button id="btn3">요약</button>
         </div>

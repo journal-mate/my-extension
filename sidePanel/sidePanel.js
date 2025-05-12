@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const btn1 = document.getElementById('btn1');
-    const btn2 = document.getElementById('btn2');
-    const btn3 = document.getElementById('btn3');
-    const t1 = document.getElementById('t1');
-    const t2 = document.getElementById('t2');
+    const btn1 = document.getElementById('btn1'); // 단순 요약
+    const btn2 = document.getElementById('btn2'); // 비교 요약
+    const btn3 = document.getElementById('btn3'); // 요약 실행
+    const t1 = document.getElementById('t1'); // 단순 입력
+    const t2 = document.getElementById('t2'); // 비교 입력
     const resultText = document.getElementById('result-text');
+    const toggleButtons = document.querySelectorAll('.summary-toggle');
 
     btn1.addEventListener('click', () => {
         t1.style.display = 'block';
@@ -16,6 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
         t1.style.display = 'none';
         t2.style.display = 'block';
         activate(btn2, btn1);
+    });
+
+    toggleButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            toggleButtons.forEach((btn) => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
     });
 
     // 요약 버튼 클릭 시 입력값 검사
@@ -31,17 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const hasURL = Array.from(urlInputs).some((input) => input.value.trim() !== '');
         const hasFile = Array.from(fileInputs).some((input) => input.files.length > 0);
 
+        const selectedToggle = document.querySelector('.summary-toggle.active');
+        const summaryLength = selectedToggle ? selectedToggle.dataset.value : 'normal';
+        console.log('선택된 요약 정도:', summaryLength);
+
         if (!hasURL && !hasFile) {
             const mode = isSimple
                 ? '단순 요약 불가: URL 또는 파일을 입력하세요.'
                 : '비교 요약 불가: URL 또는 파일을 입력하세요.';
             showToast(mode);
         } else {
-            resultText.textContent = '요약 진행 중...';
+            resultText.textContent = `요약 진행 중... (선택: ${summaryLength})`;
         }
     });
 
-    // 초기 상태 설정 (단순 요약 버튼 활성화)
     activate(btn1, btn2);
 });
 

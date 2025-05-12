@@ -38,13 +38,13 @@ button {
     width: 48%;
     margin: 8px 1%;
     color: white;
-    background-color: #4a90e2; /* 비활성화 색상 */
+    background-color: #ddd; /* 비활성화 색상 */
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 /* 버튼 활성화 상태 (파란색 강조) */
 .active-btn {
-    background-color: #7b61ff !important; /* 파란색으로 활성화 */
+    background-color: #4a90e2 !important; /* 파란색으로 활성화 */
 }
 
 /* 버튼 호버 효과 */
@@ -69,6 +69,40 @@ button {
 #btn3:hover {
     background-color: #e85c5c;
     transform: translateY(-2px);
+}
+
+/* ===== 요약 정도 ===== */
+.summary-toggle-group {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+    margin-bottom: 24px;
+}
+
+.summary-toggle {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.summary-toggle.active {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+}
+
+.summary-toggle:hover {
+    background-color: #ddd;
+}
+
+.summary-toggle.active:hover {
+    background-color: #4a90e2;
+    color: white;
 }
 
 /* ===== 입력 필드 영역 ===== */
