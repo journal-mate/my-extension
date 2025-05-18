@@ -1,28 +1,40 @@
-// 이 파일을 사용하기 위해서는 manifest.json에 background.js을 등록해야 함!
-// --------------------------------------------------------------
-console.log('백그라운트 스크립트 로딩됨');
+
+console.log('백그라운드 스크립트 로딩됨');
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log('메세지 수신: ', message);
+    if (message.type === 'gpt_summary') {
+        const apiKey = ''; // 여기에 실제 OpenAI API 키 입력
+        const prompt = `다음 논문 내용을 서론 본론 결론 형식으로 요약하고 한국어로 번역해줘. 요약 길이는 ${message.summaryLength} 수준으로 해줘:\n\n${message.text}`;
 
-    if (message.type === 'show_notification') {
-        console.log('message.type === show_notification');
-
-        chrome.notifications.create({
-            type: 'basic',
-            iconUrl: chrome.runtime.getURL('images/bear.png'),
-            title: '알림',
-            message: '곰이 나타났습니다!',
-            priority: 2,
+        fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [
+                    { role: "system", content: "당신은 한국어로 논문 요약을 도와주는 AI이다다." },
+                    { role: "user", content: prompt }
+                ]
+            }),
+        })
+        .then(res => res.json())
+        .then(data => {
+            sendResponse({ result: data.choices[0].message.content });
+        })
+        .catch(err => {
+            console.error('API 호출 실패:', err);
+            sendResponse({ result: "요약 중 오류 발생" });
         });
 
-        sendResponse({ status: 'notification sent' });
+        return true;
     }
 
     return true;
 });
 
-// 사이드 패널 열기
 chrome.runtime.onInstalled.addListener(() => {
     chrome.sidePanel.setPanelBehavior({
         openPanelOnActionClick: true,

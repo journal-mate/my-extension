@@ -1,5 +1,5 @@
+
 const pdfjsLib = window['pdfjsLib'];
-// pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,13 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 요약 버튼 클릭 시 입력값 검사
     btn3.addEventListener('click', () => {
         console.log('[요약 버튼 클릭됨]');
 
         const isSimple = btn1.classList.contains('active-btn');
-        console.log(`[현재 모드]: ${isSimple ? '단순 요약' : '비교 요약'}`);
-
         const urlInputs = isSimple
             ? t1.querySelectorAll('input[type="text"]')
             : t2.querySelectorAll('input[type="text"]');
@@ -49,40 +46,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        console.log(`[URL 입력 필드 개수]: ${urlInputs.length}`);
-        console.log(`[파일 입력 필드 개수]: ${fileInputs.length}`);
-
         const hasURL = Array.from(urlInputs).some((input) => input.value.trim() !== '');
         const files = Array.from(fileInputs)
             .map((input) => input.files[0])
             .filter((file) => file);
 
-        console.log(`[URL 입력 여부]: ${hasURL}`);
-        console.log(`[업로드된 파일 수]: ${files.length}`);
-
         const selectedToggle = document.querySelector('.summary-toggle.active');
         const summaryLength = selectedToggle ? selectedToggle.dataset.value : 'normal';
-        console.log(`[선택된 요약 정도]: ${summaryLength}`);
 
         if (!hasURL && files.length === 0) {
             const mode = isSimple
                 ? '단순 요약 불가: URL 또는 파일을 입력하세요.'
                 : '비교 요약 불가: URL 또는 파일을 입력하세요.';
-            console.warn(mode);
             showToast(mode);
             return;
         }
 
-        // 파일 검증
         const pdfFile = files.find((file) => file.type === 'application/pdf');
         if (pdfFile) {
-            console.log('[PDF 파일 발견] 추출 시작:', pdfFile.name);
-            extractTextFromPDF(pdfFile); // PDF 내용 추출 함수 호출
+            extractTextFromPDF(pdfFile, summaryLength); // pass summaryLength
         } else if (files.length > 0) {
-            console.warn('[토스트] PDF 파일만 지원합니다.');
             showToast('PDF 파일만 지원합니다.');
         } else {
-            console.log(`[요약 진행 중] 요약 길이 설정: ${summaryLength}`);
             resultText.textContent = `요약 진행 중... (선택: ${summaryLength})`;
         }
     });
@@ -104,11 +89,10 @@ function showToast(message) {
     setTimeout(() => {
         toast.classList.remove('show');
         toast.classList.add('hidden');
-    }, 2000); // 2초 후 사라짐
+    }, 2000);
 }
 
-// PDF.js 라이브러리로 pdf 처리
-function extractTextFromPDF(file) {
+function extractTextFromPDF(file, summaryLength) {
     const fileReader = new FileReader();
 
     fileReader.onload = function () {
@@ -129,10 +113,38 @@ function extractTextFromPDF(file) {
 
             Promise.all(textPromises).then((pagesText) => {
                 const fullText = pagesText.join('\n');
-                document.getElementById('result-text').textContent = fullText;
+                document.getElementById('result-text').textContent = "GPT 요약 중...";
+
+                requestSummaryViaBackground(fullText, summaryLength)
+                    .then(result => {
+                        document.getElementById('result-text').textContent = result;
+                    })
+                    .catch(err => {
+                        console.error('GPT 요약 실패:', err);
+                        document.getElementById('result-text').textContent = "요약 중 오류 발생";
+                    });
             });
         });
     };
 
     fileReader.readAsArrayBuffer(file);
+}
+
+function requestSummaryViaBackground(text, summaryLength) {
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(
+            {
+                type: "gpt_summary",
+                text,
+                summaryLength
+            },
+            (response) => {
+                if (chrome.runtime.lastError || !response) {
+                    reject(chrome.runtime.lastError || new Error("No response"));
+                } else {
+                    resolve(response.result);
+                }
+            }
+        );
+    });
 }
