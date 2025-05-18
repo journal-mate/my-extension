@@ -1,4 +1,3 @@
-
 const pdfjsLib = window['pdfjsLib'];
 pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 
@@ -113,16 +112,13 @@ function extractTextFromPDF(file, summaryLength) {
 
             Promise.all(textPromises).then((pagesText) => {
                 const fullText = pagesText.join('\n');
-                document.getElementById('result-text').textContent = "GPT 요약 중...";
-
-                requestSummaryViaBackground(fullText, summaryLength)
-                    .then(result => {
-                        document.getElementById('result-text').textContent = result;
-                    })
-                    .catch(err => {
-                        console.error('GPT 요약 실패:', err);
-                        document.getElementById('result-text').textContent = "요약 중 오류 발생";
-                    });
+                document.getElementById('result-text').textContent = 'GPT 요약 중...';
+                chrome.runtime.sendMessage({
+                    type: 'gpt_summary',
+                    text: fullText,
+                    summaryLength,
+                });
+                // 이후 onMessage 리스너가 실시간으로 화면을 갱신
             });
         });
     };
@@ -130,21 +126,35 @@ function extractTextFromPDF(file, summaryLength) {
     fileReader.readAsArrayBuffer(file);
 }
 
-function requestSummaryViaBackground(text, summaryLength) {
-    return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage(
-            {
-                type: "gpt_summary",
-                text,
-                summaryLength
-            },
-            (response) => {
-                if (chrome.runtime.lastError || !response) {
-                    reject(chrome.runtime.lastError || new Error("No response"));
-                } else {
-                    resolve(response.result);
-                }
-            }
-        );
-    });
-}
+let accumulated = '';
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'gpt_summary_stream') {
+        if (message.error) {
+            document.getElementById('result-text').textContent = message.result;
+        } else if (message.done) {
+            document.getElementById('result-text').textContent = message.result;
+        } else {
+            accumulated = message.accumulated;
+            document.getElementById('result-text').textContent = accumulated;
+        }
+    }
+});
+
+// function requestSummaryViaBackground(text, summaryLength) {
+//     return new Promise((resolve, reject) => {
+//         chrome.runtime.sendMessage(
+//             {
+//                 type: 'gpt_summary',
+//                 text,
+//                 summaryLength,
+//             },
+//             (response) => {
+//                 if (chrome.runtime.lastError || !response) {
+//                     reject(chrome.runtime.lastError || new Error('No response'));
+//                 } else {
+//                     resolve(response.result);
+//                 }
+//             }
+//         );
+//     });
+// }
