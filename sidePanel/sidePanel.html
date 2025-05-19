@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <script src="pdf.min.js"></script>
-        <script src="sidePanel.js"></script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Side Panel</title>
         <link rel="stylesheet" href="sidePanel.css" />
+        <script src="pdf.min.js"></script>
+        <script src="sidePanel.js"></script>
     </head>
     <body>
         <!-- 요약 종류 -->
         <div class="button-group">
-            <button id="btn1">단순 요약</button>
-            <button id="btn2">비교 요약</button>
+            <button id="url-summary-btn" class="active-btn">URL</button>
+            <button id="pdf-summary-btn">PDF</button>
         </div>
 
         <!-- 요약 정도 -->
@@ -22,38 +22,17 @@
             <button class="summary-toggle" data-value="long">길게</button>
         </div>
 
-        <!-- 입력 -->
-        <div id="t1">
-            <h2>url 입력</h2>
-            <div class="t11">
-                <input type="text" placeholder="URL을 입력하세요" />
-            </div>
-
-            <h2>파일 업로드</h2>
-            <div class="t11">
-                <input type="file" />
-            </div>
-        </div>
-
-        <div id="t2">
-            <h2>url 입력</h2>
-            <div class="t11">
-                <input type="text" placeholder="URL을 입력하세요" />
-                <input type="text" placeholder="URL을 입력하세요" />
-            </div>
-
-            <h2>파일 업로드</h2>
-            <div class="t11">
-                <input type="file" />
-                <input type="file" />
-            </div>
+        <!-- 입력창 -->
+        <div id="input-area"></div>
+        <div class="center-container">
+            <button id="add-input">+</button>
         </div>
 
         <br /><br />
 
         <!-- 요약 버튼 -->
         <div class="center-container">
-            <button id="btn3">요약</button>
+            <button id="summary-btn">요약</button>
         </div>
 
         <div id="result" class="result-container">

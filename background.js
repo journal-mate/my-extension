@@ -3,7 +3,7 @@ console.log('백그라운드 스크립트 로딩됨');
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'gpt_summary') {
         const apiKey = ''; // 여기에 실제 OpenAI API 키 입력
-        const prompt = `다음 논문 내용을 서론 본론 결론 형식으로 요약하고 한국어로 번역해줘. 요약 길이는 ${message.summaryLength} 수준으로 해줘:\n\n${message.text}`;
+        const prompt = `다음 논문 내용을 요약하고 한국어로 번역해줘. 만약 파일이 두 개라면, 두 개를 비교해줘. 요약 길이는 ${message.summaryLength} 수준으로 해줘:\n\n${message.text}`;
 
         fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 model: 'gpt-4o-mini',
                 stream: true,
                 messages: [
-                    { role: 'system', content: '당신은 한국어로 논문 요약을 도와주는 AI이다다.' },
+                    { role: 'system', content: '당신은 한국어로 논문 요약을 도와주는 AI이다.' },
                     { role: 'user', content: prompt },
                 ],
             }),
@@ -64,7 +64,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
     }
 
-    return true;
+    // return true;
 });
 
 chrome.runtime.onInstalled.addListener(() => {

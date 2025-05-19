@@ -8,7 +8,7 @@
         "128": "images/logo.png"
     },
 
-    "permissions": ["scripting", "activeTab", "sidePanel", "notifications"],
+    "permissions": ["scripting", "activeTab", "sidePanel", "notifications", "tabs"],
 
     "action": {
         "default_title": "PaperMate 요약 열기"
