@@ -1,0 +1,22 @@
+1. manifest.json
+    - "matches": ["<all_urls>"]: 모든 웹사이트에서 작동한다는 의미.
+        만약 ["https"//*.naver.com/*"] 라면 네이버에서만 작동한다.
+    
+
+2. background
+
+3. content
+
+4. popup
+    - chrome.tabs.sendMessage(...)는 content script에게만 메세지를 보냄. background.js는 이 메세지를 받을 수 없다.
+        background.js에게 보낼려면 chrome.runtime.sendMessage() 를 사용 
+
+5. 에러
+    - Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'executeScript')
+        -> chrome.scripting이 undefined라는 뜻. manifest.json의 permission에 'scripting, activeTab'을 추가하자.
+    - Uncaught (in promise) Error: Cannot access a chrome:// URL
+        -> 현재 탭이 chrome:// 페이지 (ex. chrome://extensions, chrome://settings 등) 일 경우에는 
+            크롬 확장프로그램이 해당 페이지에 접근할 수 없음.
+        -> 네이버나 구글에서 테스트해보자.
+    - 메시지 전송 오류: Could not establish connection. Receiving end does not exist.
+        -> 메세지를 보냈는데 받는 쪽(content.js)이 존재하지 않음.
