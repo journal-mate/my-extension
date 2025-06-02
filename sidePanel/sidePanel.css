@@ -65,9 +65,27 @@ button {
     margin-top: 8px;
 }
 
+/* 비교 버튼 (하단) */
+#compare-btn {
+    width: 100%;
+    max-width: 500px;
+    background-color: #0f9948;
+    color: white;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 18px;
+    margin-top: 8px;
+}
+
 /* 요약 버튼 호버 시 색상 변화 */
 #summary-btn:hover {
     background-color: #e85c5c;
+    transform: translateY(-2px);
+}
+
+/* 비교 버튼 호버 시 색상 변화 */
+#compare-btn:hover {
+    background-color: #0d8640;
     transform: translateY(-2px);
 }
 
@@ -195,6 +213,7 @@ button {
     display: flex;
     justify-content: center;
 }
+
 
 /* ================================= 요약 결과 ================================= */
 #summary-title {

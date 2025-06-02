@@ -23,6 +23,8 @@
     "background": {
         "service_worker": "background.js"
     },
+    "host_permissions": ["<all_urls>"],
+
 
     "web_accessible_resources": [
         {
@@ -30,4 +32,6 @@
             "matches": ["<all_urls>"]
         }
     ]
+    
+    
 }
