@@ -22,6 +22,7 @@ ${message.text}
             },
             body: JSON.stringify({
                 model: 'gpt-4o-mini',
+                stream: true,
                 messages: [
                     {
                         role: 'system',
@@ -38,25 +39,41 @@ ${message.text}
             }),
         })
             .then(async (res) => {
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    throw new Error(`OpenAI API 오류: ${res.status} ${errorText}`);
+                if (!res.body) throw new Error('No response body');
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let fullText = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    chunk.split('\n').forEach((line) => {
+                        if (line.startsWith('data: ') && !line.includes('[DONE]')) {
+                            try {
+                                const data = JSON.parse(line.replace('data: ', ''));
+                                const delta = data.choices[0].delta?.content || '';
+                                fullText += delta;
+                                chrome.runtime.sendMessage({
+                                    type: 'gpt_summary_stream_web',
+                                    chunk: delta,
+                                    accumulated: fullText,
+                                });
+                            } catch (e) {}
+                        }
+                    });
                 }
-                return res.json();
-            })
-            .then((data) => {
-                const summary =
-                    data.choices && data.choices[0].message && data.choices[0].message.content
-                        ? data.choices[0].message.content
-                        : '요약 결과가 없습니다.';
+                // 최종 완료 신호
                 chrome.runtime.sendMessage({
-                    type: 'gpt_summary_result',
-                    result: summary,
+                    type: 'gpt_summary_stream_web',
+                    done: true,
+                    result: fullText,
                 });
             })
             .catch((err) => {
                 chrome.runtime.sendMessage({
-                    type: 'gpt_summary_result',
+                    type: 'gpt_summary_stream_web',
                     result: '요약 중 오류 발생: ' + err.message,
                 });
             });
@@ -84,6 +101,7 @@ ${message.text}
                         ],
                     }),
                 });
+
                 if (!res.body) throw new Error('No response body');
                 const reader = res.body.getReader();
                 const decoder = new TextDecoder('utf-8');
@@ -99,7 +117,9 @@ ${message.text}
                             try {
                                 const data = JSON.parse(line.replace('data: ', ''));
                                 const delta = data.choices[0].delta?.content || '';
+
                                 fullText += delta;
+
                                 chrome.runtime.sendMessage({
                                     type: 'gpt_summary_stream',
                                     id: file.id,
@@ -164,6 +184,7 @@ ${message.summaries.map((s, idx) => `[${message.filenames[idx]}]:\n${s}`).join('
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
+
                     const chunk = decoder.decode(value, { stream: true });
                     chunk.split('\n').forEach((line) => {
                         if (line.startsWith('data: ') && !line.includes('[DONE]')) {

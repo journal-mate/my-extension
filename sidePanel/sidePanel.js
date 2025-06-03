@@ -293,6 +293,8 @@ function renderMultiResultPlaceholders(files) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log('[sidePanel] 받은 메시지:', message);
+
     if (message.type === 'gpt_summary_stream') {
         const card = document.getElementById(`result-card-${message.id}`);
         if (card) {
@@ -306,6 +308,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
         }
     }
+
     if (message.type === 'gpt_summary_compare_result') {
         const compareResult = document.getElementById('compare-result');
         if (compareResult) {
@@ -318,10 +321,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
         }
     }
-    if (message.type === 'gpt_summary_result') {
+
+    // if (message.type === 'gpt_summary_result') {
+    //     const resultArea = document.getElementById('result-text');
+    //
+    //     if (resultArea) {
+    //         resultArea.innerHTML = `<b>요약 결과</b><div style="margin-top:5px;">${message.result}</div>`;
+    //     }
+    // }
+
+    if (message.type === 'gpt_summary_stream_web') {
         const resultArea = document.getElementById('result-text');
+
         if (resultArea) {
-            resultArea.innerHTML = `<b>요약 결과</b><div style="margin-top:5px;">${message.result}</div>`;
+            if (message.error) {
+                resultArea.innerHTML = message.result;
+            } else if (message.done) {
+                resultArea.innerHTML = `<b>요약 결과</b><div style="margin-top:5px;">${message.result}</div>`;
+            } else if (message.accumulated) {
+                resultArea.innerHTML = `<b>요약 결과</b><div style="margin-top:5px;">${message.accumulated}</div>`;
+            }
         }
     }
 });
