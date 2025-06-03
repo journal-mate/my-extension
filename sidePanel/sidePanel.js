@@ -2,18 +2,43 @@ const pdfjsLib = window['pdfjsLib'];
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // URL, PDF 버튼
     const btnUrl = document.getElementById('url-summary-btn');
     const btnPdf = document.getElementById('pdf-summary-btn');
-    const addInputBtn = document.getElementById('add-input');
+
+    // + 버튼
+    const inputAddBtn = document.getElementById('input-add');
     const inputArea = document.getElementById('input-area');
-    const btn3 = document.getElementById('summary-btn');
-    const resultText = document.getElementById('result-text');
+
+    // 요약, 비교 버튼 및 결과창
+    const summaryBtn = document.getElementById('summary-btn');
     const compareBtn = document.getElementById('compare-btn');
+
+    const resultText = document.getElementById('result-text');
     const compareResult = document.getElementById('compare-result');
+    const compareResultBox = document.getElementById('compare-result-box');
+
+    // 요약 정도
     const toggleButtons = document.querySelectorAll('.summary-toggle');
 
     let currentType = 'url';
     let inputCount = 1;
+
+    btnUrl.addEventListener('click', () => {
+        compareBtn.style.display = 'none';
+        compareResult.style.display = 'none';
+        compareResultBox.style.display = 'none';
+        inputAddBtn.style.display = 'none';
+        inputArea.style.display = 'none';
+    });
+
+    btnPdf.addEventListener('click', () => {
+        compareBtn.style.display = 'block';
+        compareResult.style.display = 'block';
+        compareResultBox.style.display = 'block';
+        inputAddBtn.style.display = 'block';
+        inputArea.style.display = 'block';
+    });
 
     function renderInputs() {
         inputArea.innerHTML = '';
@@ -61,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activate(btnPdf, btnUrl);
     });
 
-    addInputBtn.addEventListener('click', () => {
+    inputAddBtn.addEventListener('click', () => {
         if (currentType === 'pdf') {
             inputCount++;
             renderInputs();
@@ -75,33 +100,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    btn3.addEventListener('click', () => {
+    summaryBtn.addEventListener('click', () => {
         const selectedToggle = document.querySelector('.summary-toggle.active');
         const summaryLength = selectedToggle ? selectedToggle.dataset.value : 'normal';
 
         if (currentType === 'pdf') {
             const files = Array.from(inputArea.querySelectorAll('input[type="file"]'))
-                .map(input => input.files[0])
-                .filter(file => file && file.type === 'application/pdf');
+                .map((input) => input.files[0])
+                .filter((file) => file && file.type === 'application/pdf');
 
             if (files.length === 0) {
                 showToast('PDF 파일을 업로드하세요.');
                 return;
             }
 
-            Promise.all(files.map((file, idx) =>
-                extractTextFromPDFAsync(file).then(text => ({
-                    id: idx,
-                    name: file.name,
-                    text
-                }))
-            ))
-            .then(fileTexts => {
+            Promise.all(
+                files.map((file, idx) =>
+                    extractTextFromPDFAsync(file).then((text) => ({
+                        id: idx,
+                        name: file.name,
+                        text,
+                    }))
+                )
+            ).then((fileTexts) => {
                 renderMultiResultPlaceholders(fileTexts);
                 chrome.runtime.sendMessage({
                     type: 'gpt_summary_multi',
                     files: fileTexts,
-                    summaryLength
+                    summaryLength,
                 });
                 if (compareResult) compareResult.textContent = '';
             });
@@ -139,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             type: 'gpt_summary',
                             text: pageText,
                             summaryLength,
-                            url: url
+                            url: url,
                         });
                         if (compareResult) compareResult.textContent = '';
                     }
@@ -154,24 +180,51 @@ document.addEventListener('DOMContentLoaded', () => {
             const resultCards = Array.from(document.querySelectorAll('.result-card'));
             const summaries = [];
             const filenames = [];
-            resultCards.forEach(card => {
-                const content = card.querySelector('.summary-content').textContent.trim();
-                const title = card.querySelector('b').textContent.trim();
-                summaries.push(content);
-                filenames.push(title);
-            });
 
-            if (summaries.length < 2) {
-                showToast('두 개 이상의 논문 요약이 필요합니다.');
+            if (resultCards.length >= 2) {
+                resultCards.forEach((card) => {
+                    const content = card.querySelector('.summary-content').textContent.trim();
+                    const title = card.querySelector('b').textContent.trim();
+                    summaries.push(content);
+                    filenames.push(title);
+                });
+
+                compareResult.textContent = '비교 중...';
+
+                chrome.runtime.sendMessage({
+                    type: 'gpt_summary_compare',
+                    summaries,
+                    filenames,
+                });
+                return;
+            }
+
+            // 텍스트 추출 후 비교
+            const files = Array.from(inputArea.querySelectorAll('input[type="file"]'))
+                .map((input) => input.files[0])
+                .filter((file) => file && file.type === 'application/pdf');
+
+            if (files.length < 2) {
+                showToast('두 개 이상의 PDF 파일을 업로드하세요.');
                 return;
             }
 
             compareResult.textContent = '비교 중...';
 
-            chrome.runtime.sendMessage({
-                type: 'gpt_summary_compare',
-                summaries,
-                filenames
+            Promise.all(
+                files.map((file, idx) =>
+                    extractTextFromPDFAsync(file).then((text) => ({
+                        id: idx,
+                        name: file.name,
+                        text,
+                    }))
+                )
+            ).then((fileTexts) => {
+                chrome.runtime.sendMessage({
+                    type: 'gpt_summary_compare',
+                    summaries: fileTexts.map((f) => f.text),
+                    filenames: fileTexts.map((f) => f.name),
+                });
             });
         });
     }
@@ -205,16 +258,16 @@ function extractTextFromPDFAsync(file) {
                 let textPromises = [];
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                     textPromises.push(
-                        pdf.getPage(pageNum).then(page =>
-                            page.getTextContent().then(content => {
-                                const text = content.items.map(item => item.str).join('');
+                        pdf.getPage(pageNum).then((page) =>
+                            page.getTextContent().then((content) => {
+                                const text = content.items.map((item) => item.str).join('');
                                 return text.replace(/\s+/g, ' ').trim();
                             })
                         )
                     );
                 }
                 Promise.all(textPromises)
-                    .then(pagesText => resolve(pagesText.join('\n')))
+                    .then((pagesText) => resolve(pagesText.join('\n')))
                     .catch(reject);
             });
         };
@@ -226,13 +279,17 @@ function extractTextFromPDFAsync(file) {
 function renderMultiResultPlaceholders(files) {
     const resultArea = document.getElementById('result-text');
     resultArea.innerHTML = '';
-    files.forEach(file => {
+
+    files.forEach((file) => {
         const card = document.createElement('div');
         card.id = `result-card-${file.id}`;
         card.className = 'result-card';
         card.innerHTML = `<b>${file.name}</b><div class="summary-content">요약 대기중...</div>`;
         resultArea.appendChild(card);
     });
+
+    console.log('[renderMultiResultPlaceholders] 생성된 카드 개수:', document.querySelectorAll('.result-card').length);
+    console.log('[renderMultiResultPlaceholders] resultArea.innerHTML:', resultArea.innerHTML);
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
