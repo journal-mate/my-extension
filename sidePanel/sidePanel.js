@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const compareResult = document.getElementById('compare-result');
     const toggleButtons = document.querySelectorAll('.summary-toggle');
 
-    let currentType = 'url'; // url 또는 pdf
+    let currentType = 'url';
     let inputCount = 1;
 
     function renderInputs() {
@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // PDF 및 URL 요약 처리
     btn3.addEventListener('click', () => {
         const selectedToggle = document.querySelector('.summary-toggle.active');
         const summaryLength = selectedToggle ? selectedToggle.dataset.value : 'normal';
@@ -107,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (compareResult) compareResult.textContent = '';
             });
         } else {
-            // URL 모드: 현재 탭의 본문 텍스트 추출 및 요약/번역
             chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
                 const tabId = tabs[0].id;
                 const url = tabs[0].url;
@@ -115,27 +113,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     {
                         target: { tabId: tabId },
                         func: () => {
-                            // 여러 selector를 활용하여 본문만 최대한 잘 추출
-                            // 필요에 따라 selector 추가/변경 가능!
                             let text = '';
-                            // 네이버 뉴스 등
                             if (document.querySelector('.newsct_article')) {
                                 text = document.querySelector('.newsct_article').innerText;
-                            }
-                            // 블로그/뉴스 기사
-                            else if (document.querySelector('article')) {
+                            } else if (document.querySelector('article')) {
                                 text = document.querySelector('article').innerText;
-                            }
-                            // Daum 뉴스 등
-                            else if (document.querySelector('.article_view')) {
+                            } else if (document.querySelector('.article_view')) {
                                 text = document.querySelector('.article_view').innerText;
-                            }
-                            // 네이버 카페 등
-                            else if (document.querySelector('.se-main-container')) {
+                            } else if (document.querySelector('.se-main-container')) {
                                 text = document.querySelector('.se-main-container').innerText;
-                            }
-                            // 마지막 fallback
-                            else if (document.body) {
+                            } else if (document.body) {
                                 text = document.body.innerText;
                             }
                             return text;
@@ -143,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     function (results) {
                         const pageText = results && results[0] && results[0].result ? results[0].result : '';
-                        console.log('추출된 페이지 텍스트:', pageText); // 진단용 로그
                         if (!pageText.trim()) {
                             showToast('페이지에서 텍스트를 추출할 수 없습니다.');
                             return;
@@ -162,13 +148,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 비교하기 버튼 처리
+    // 비교 버튼: 반드시 요약 결과만 비교
     if (compareBtn) {
         compareBtn.addEventListener('click', () => {
             const resultCards = Array.from(document.querySelectorAll('.result-card'));
             const summaries = [];
             const filenames = [];
-
             resultCards.forEach(card => {
                 const content = card.querySelector('.summary-content').textContent.trim();
                 const title = card.querySelector('b').textContent.trim();
@@ -181,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (compareResult) compareResult.textContent = '비교 중...';
+            compareResult.textContent = '비교 중...';
 
             chrome.runtime.sendMessage({
                 type: 'gpt_summary_compare',
@@ -195,13 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
     activate(btnUrl, btnPdf);
 });
 
-// 활성화
 function activate(activeBtn, inactiveBtn) {
     activeBtn.classList.add('active-btn');
     inactiveBtn.classList.remove('active-btn');
 }
 
-// 토스트 메시지
 function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -213,7 +196,6 @@ function showToast(message) {
     }, 2000);
 }
 
-// 비동기로 PDF 텍스트 추출
 function extractTextFromPDFAsync(file) {
     return new Promise((resolve, reject) => {
         const fileReader = new FileReader();
@@ -241,7 +223,6 @@ function extractTextFromPDFAsync(file) {
     });
 }
 
-// 여러 PDF 결과 카드 미리 그리기
 function renderMultiResultPlaceholders(files) {
     const resultArea = document.getElementById('result-text');
     resultArea.innerHTML = '';
@@ -254,7 +235,6 @@ function renderMultiResultPlaceholders(files) {
     });
 }
 
-// background에서 오는 메시지로 각 카드별로 결과 갱신 및 비교 결과 갱신
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'gpt_summary_stream') {
         const card = document.getElementById(`result-card-${message.id}`);
@@ -272,10 +252,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'gpt_summary_compare_result') {
         const compareResult = document.getElementById('compare-result');
         if (compareResult) {
-            compareResult.textContent = message.error ? message.result : message.result;
+            if (message.error) {
+                compareResult.textContent = message.result;
+            } else if (message.done) {
+                compareResult.textContent = message.result;
+            } else if (message.accumulated) {
+                compareResult.textContent = message.accumulated;
+            }
         }
     }
-    // URL 단일 요약 결과
     if (message.type === 'gpt_summary_result') {
         const resultArea = document.getElementById('result-text');
         if (resultArea) {

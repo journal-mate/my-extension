@@ -1,58 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Side Panel</title>
-        <link rel="stylesheet" href="sidePanel.css" />
-        <script src="pdf.min.js"></script>
-        <script src="sidePanel.js"></script>
-    </head>
-    <body>
-        <!-- 요약 종류 -->
-        <div class="button-group">
-            <button id="url-summary-btn" class="active-btn">URL</button>
-            <button id="pdf-summary-btn">PDF</button>
-        </div>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Side Panel</title>
+    <link rel="stylesheet" href="sidePanel.css" />
+    <script src="pdf.min.js"></script>
+    <script src="sidePanel.js"></script>
+</head>
+<body>
+    <!-- 요약 종류 -->
+    <div class="button-group">
+        <button id="url-summary-btn" class="active-btn">URL</button>
+        <button id="pdf-summary-btn">PDF</button>
+    </div>
 
-        <!-- 요약 정도 -->
-        <div class="summary-toggle-group">
-            <button class="summary-toggle active" data-value="short">짧게</button>
-            <button class="summary-toggle" data-value="normal">보통</button>
-            <button class="summary-toggle" data-value="long">길게</button>
-        </div>
+    <!-- 요약 정도 -->
+    <div class="summary-toggle-group">
+        <button class="summary-toggle active" data-value="short">짧게</button>
+        <button class="summary-toggle" data-value="normal">보통</button>
+        <button class="summary-toggle" data-value="long">길게</button>
+    </div>
 
-        <!-- 입력창 -->
-        <div id="input-area"></div>
-        <div class="center-container">
-            <button id="add-input">+</button>
-        </div>
+    <!-- 입력창 -->
+    <div id="input-area"></div>
+    <div class="center-container">
+        <button id="add-input">+</button>
+    </div>
+    <br /><br />
 
-        <br /><br />
+    <!-- 요약 버튼 -->
+    <div class="center-container">
+        <button id="summary-btn">요약</button>
+    </div>
 
-        <!-- 요약 버튼 -->
-        <div class="center-container">
-            <button id="summary-btn">요약</button>
-        </div>
+    <!-- 요약 결과 -->
+    <div id="summary-result" class="result-container">
+        <h2>요약 결과</h2>
+        <div id="result-text">여기에 요약 결과가 표시됩니다.</div>
+    </div>
 
-        <div id="result" class="result-container">
-            <h2 id="summary-title">요약 결과</h2>
-            <p id="result-text">여기에 요약 결과가 표시됩니다.</p>
-        </div>
+    <!-- 비교 버튼 -->
+    <div class="center-container">
+        <button id="compare-btn">비교</button>
+    </div>
 
-
-        <!-- 비교 버튼 -->
-         <div class="center-container">
-            <button id="compare-btn">비교</button>
-        </div>
-
-        <div id="result" class="result-container">
-            <h2 id="summary-title">비교 결과</h2>
-            <p id="result-text">여기에 비교 결과가 표시됩니다.</p>
-        </div>
-        
-
-        <!-- result-text 아래나 옆에 추가 -->
-        <div id="toast" class="toast hidden">요약 불가: URL 또는 파일을 입력하세요.</div>
-    </body>
+    <!-- 비교 결과 -->
+    <div id="compare-result-box" class="result-container">
+        <h2>비교 결과</h2>
+        <div id="compare-result">여기에 비교 결과가 표시됩니다.</div>
+    </div>
+    
+    <div id="toast" class="toast hidden">요약 불가: URL 또는 파일을 입력하세요.</div>
+</body>
 </html>
