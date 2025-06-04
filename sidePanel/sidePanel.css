@@ -1,129 +1,139 @@
-/* ================================= 공통 ================================= */
 body {
-    font-family: 'Arial', sans-serif;
-    padding: 16px;
+    font-family: 'Pretendard', 'Arial', sans-serif;
+    padding: 24px;
     background-color: #f9f9f9;
-    color: #333;
+    color: #222;
+    letter-spacing: 0.01em;
 }
 
 h2 {
     text-align: center;
-    color: #4a90e2;
-    margin-bottom: 6px;
+    color: #3579dc;
+    margin-bottom: 10px;
+    font-size: 22px;
+    font-weight: 600;
 }
 
-/* ================================= 버튼 공통 ================================= */
-button {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+.desc {
+    text-align: center;
+    color: #666;
+    margin-bottom: 24px;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
 }
 
-/* 버튼 컨테이너 한 줄 배치 */
 .button-group {
     display: flex;
     justify-content: center;
-    gap: 16px; /* 버튼 간 간격 */
-    margin-bottom: 24px;
+    gap: 16px;
+    margin-bottom: 28px;
 }
 
-/* 단순 요약 & 비교 요약 버튼 (초기 비활성화 상태) */
+.button-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+}
+
 #url-summary-btn,
 #pdf-summary-btn {
     flex: 1;
     max-width: 200px;
     width: 48%;
-    margin: 8px 1%;
     color: white;
-    background-color: #ddd; /* 비활성화 색상 */
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-/* 버튼 활성화 상태 (파란색 강조) */
-.active-btn {
-    background-color: #4a90e2 !important; /* 파란색으로 활성화 */
-}
-
-/* 버튼 호버 효과 */
-#btn1:hover,
-#btn2:hover {
-    transform: translateY(-2px);
-}
-
-/* 요약 버튼 (하단) */
-#summary-btn {
-    width: 100%;
-    max-width: 500px;
-    background-color: #ff6b6b;
-    color: white;
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 18px;
-    margin-top: 8px;
-}
-
-/* 비교 버튼 (하단) */
-#compare-btn {
-    width: 100%;
-    max-width: 500px;
-    background-color: #0f9948;
-    color: white;
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 18px;
-    margin-top: 8px;
-}
-
-/* 요약 버튼 호버 시 색상 변화 */
-#summary-btn:hover {
-    background-color: #e85c5c;
-    transform: translateY(-2px);
-}
-
-/* 비교 버튼 호버 시 색상 변화 */
-#compare-btn:hover {
-    background-color: #0d8640;
-    transform: translateY(-2px);
-}
-
-/* ================================= 요약 정도 ================================= */
-.summary-toggle-group {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 16px;
-    margin-bottom: 24px;
-}
-
-.summary-toggle {
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f0f0f0;
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.summary-toggle.active {
-    background-color: #4a90e2;
-    color: white;
-    border: none;
-}
-
-.summary-toggle:hover {
     background-color: #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 13px 0;
+    transition: background-color 0.3s;
+    border: none;
+    outline: none;
 }
 
-.summary-toggle.active:hover {
-    background-color: #4a90e2;
-    color: white;
+.active-btn {
+    background-color: #3579dc !important;
 }
 
-/* ================================= 입력창 ================================= */
+#url-summary-btn:hover, #pdf-summary-btn:hover {
+    background-color: #b3c9e6;
+}
+
+.summary-slider-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px 0 20px 0;
+}
+.slider-label {
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+}
+#summaryRange {
+    width: 240px;
+    accent-color: #3579dc;
+    height: 4px;
+    border-radius: 2px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #3579dc, #53c0f7 80%);
+    transition: background 0.3s;
+    outline: none;
+}
+.slider-labels {
+    display: flex;
+    width: 240px;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #888;
+    margin-top: -2px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+#summaryRange::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2.5px solid #3579dc;
+    box-shadow: 0 2px 10px 0 rgba(53,121,220,0.13);
+    cursor: pointer;
+    transition: border 0.3s;
+}
+#summaryRange:focus::-webkit-slider-thumb {
+    border: 2.5px solid #245b94;
+}
+#summaryRange::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2.5px solid #3579dc;
+    box-shadow: 0 2px 10px 0 rgba(53,121,220,0.13);
+    cursor: pointer;
+    transition: border 0.3s;
+}
+#summaryRange:focus::-moz-range-thumb {
+    border: 2.5px solid #245b94;
+}
+#summaryRange::-ms-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2.5px solid #3579dc;
+    box-shadow: 0 2px 10px 0 rgba(53,121,220,0.13);
+    cursor: pointer;
+    transition: border 0.3s;
+}
+
+/* 입력창, 입력 그룹, 버튼 등 기존과 동일 */
 .inputGroup {
     display: flex;
     flex-direction: row;
@@ -134,7 +144,6 @@ button {
     width: 100%;
 }
 
-/* 텍스트 입력창 & 파일 업로드 입력창 */
 .inputGroup input[type='text'],
 .inputGroup input[type='file'] {
     flex: 1 1 0;
@@ -148,14 +157,12 @@ button {
     transition: border-color 0.2s;
 }
 
-/* 입력창 포커스 시 테두리 색상 강조 */
 .inputGroup input[type='text']:focus,
 .inputGroup input[type='file']:focus {
-    border-color: #4a90e2;
+    border-color: #3579dc;
     outline: none;
 }
 
-/* x(삭제) 버튼 스타일 */
 .remove-btn,
 .removeInputBtn {
     width: 28px;
@@ -173,20 +180,17 @@ button {
     border: none;
     transition: background 0.2s, color 0.2s;
 }
-
 .remove-btn:hover,
 .removeInputBtn:hover {
     background: #ff6b6b;
     color: #fff;
 }
-
-/* + 버튼 (입력 추가) */
-#add-input,
+#input-add,
 #addInputBtn {
     width: 42px;
     height: 42px;
     font-size: 22px;
-    background: #4a90e2;
+    background: #3579dc;
     color: #fff;
     border-radius: 50%;
     margin-bottom: 16px;
@@ -195,44 +199,66 @@ button {
     justify-content: center;
     padding: 0;
     line-height: 1;
+    border: none;
 }
-
-#add-input:hover,
+#input-add:hover,
 #addInputBtn:hover {
-    background: #296bb0;
+    background: #245b94;
 }
-
-/* 입력창 placeholder 색 */
-.inputGroup input[type='text']::placeholder {
-    color: #bbb;
-    font-size: 15px;
-}
-
-/* ===== 버튼 가운데 정렬 ===== */
 .center-container {
     display: flex;
     justify-content: center;
 }
 
+#summary-btn {
+    width: 100%;
+    max-width: 500px;
+    background-color: #ff6b6b;
+    color: white;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 8px;
+    border: none;
+    transition: background-color 0.3s, box-shadow 0.2s;
+}
+#summary-btn:hover {
+    background-color: #e85c5c;
+    box-shadow: 0 2px 8px 0 rgba(255, 107, 107, 0.07);
+    transform: translateY(-2px);
+}
 
-/* ================================= 요약 결과 ================================= */
-#summary-title {
-    padding: -10px;
-    margin: -10px;
+#compare-btn {
+    width: 100%;
+    max-width: 500px;
+    background-color: #0f9948;
+    color: white;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 18px;
+    margin-top: 8px;
+    border: none;
+    transition: background-color 0.3s, box-shadow 0.2s;
+}
+#compare-btn:hover {
+    background-color: #0d8640;
+    box-shadow: 0 2px 8px 0 rgba(15, 153, 72, 0.07);
+    transform: translateY(-2px);
 }
 
 .result-container {
     background-color: #ffffff;
-    padding: 4px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 14px 14px 12px 14px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     margin-top: 8px;
     margin-bottom: 8px;
     text-align: left;
     color: #333;
     max-height: 400px;
     overflow-y: auto;
-    line-height: 1.4;
+    line-height: 1.6;
     font-size: 15px;
     white-space: pre-wrap;
     color: black;
@@ -243,13 +269,11 @@ button {
 .result-container::-webkit-scrollbar {
     width: 6px;
 }
-
 .result-container::-webkit-scrollbar-thumb {
-    background-color: #4a90e2;
+    background-color: #3579dc;
     border-radius: 3px;
 }
 
-/* ===== 토스트 ===== */
 .toast {
     position: fixed;
     top: 20px;
@@ -259,16 +283,10 @@ button {
     color: white;
     padding: 12px 24px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     z-index: 9999;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.5s;
 }
-
-.toast.show {
-    opacity: 1;
-}
-
-.toast.hidden {
-    display: none;
-}
+.toast.show { opacity: 1; }
+.toast.hidden { display: none; }
