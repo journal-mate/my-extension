@@ -4,16 +4,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // 0. 웹페이지 요약 요청
     if (message.type === 'gpt_summary') {
         const apiKey = '';
+        const korSummaryLevel =
+            message.summaryLength === 'short'
+                ? '짧게 (100자 내외)'
+                : message.summaryLength === 'long'
+                ? '길게 (서론/본론/결론을 구분하는 구조로 상세히)'
+                : '보통';
         const prompt = `다음은 사용자가 방문한 웹페이지의 본문 전체이다.
-만약 본문이 논문, 기사, 블로그, 백과사전, 위키 등 '정보성 자료'라면, 
-내용을 서론/본론/결론의 구조로 간결하게 요약하고 반드시 한국어로 번역하라.. 
-요약 길이는 ${message.summaryLength} 수준으로 하라.
-만약 본문이 포털, 검색, 광고, 로그인, 네비게이션, 메인화면 등 정보성이 부족한 페이지라면 
+만약 본문이 논문, 기사, 블로그, 백과사전, 위키 등 '정보성 자료'라면,
+내용을 요약하고 반드시 한국어로 번역하라.
+
+※ 요약 길이: ${korSummaryLevel}로 작성하라.
+
+만약 본문이 포털, 검색, 광고, 로그인, 네비게이션, 메인화면 등 정보성이 부족한 페이지라면
 "이 페이지에는 요약하거나 번역할 만한 정보성 본문이 없습니다."라고 출력하라.
 ---
 ${message.text}
 ---`;
-
         fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -27,7 +34,7 @@ ${message.text}
                     {
                         role: 'system',
                         content: `너는 사용자가 방문한 웹페이지의 본문을 분석해서,
-- 논문, 기사, 블로그, 백과사전, 리뷰 등 '정보성 자료'면 서론/본론/결론 구조로 요약 후 반드시 한국어로 번역해 출력하라.
+- 논문, 기사, 블로그, 백과사전, 리뷰 등 '정보성 자료'면 요약 후 반드시 한국어로 번역해 출력하라.
 - 포털, 검색, 광고, 로그인, 네비, 메인화면 등 정보성 없는 페이지면 "이 페이지에는 요약하거나 번역할 만한 정보성 본문이 없습니다."라고 출력하라.
 - 반드시 둘 중 하나만 수행`,
                     },
@@ -83,8 +90,17 @@ ${message.text}
     if (message.type === 'gpt_summary_multi') {
         const apiKey = '';
         message.files.forEach(async (file) => {
-            const prompt = `다음 논문 내용을 서론 본론 결론의 구조로 요약하고 한국어로 번역하라. 요약 길이는 ${message.summaryLength} 수준으로 하라라:\n\n${file.text}`;
-
+            const korSummaryLevel =
+                message.summaryLength === 'short'
+                    ? '짧게 (100자 내외)'
+                    : message.summaryLength === 'long'
+                    ? '길게 (서론/본론/결론을 구분하는 구조로 상세히)'
+                    : '보통';
+            const prompt = `다음 논문 내용을 요약하고 한국어로 번역하라.
+※ 요약 길이: ${korSummaryLevel}로 작성하라.
+---
+${file.text}
+---`;
             try {
                 const res = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
@@ -156,10 +172,7 @@ ${message.text}
         const combinedPrompt = `다음은 여러 논문(또는 PDF 파일)의 요약 결과이다.
 각 논문의 핵심 내용을 바탕으로, 공통점과 차이점을 항목별로 비교해서 한국어로 자세히 정리하라.
 공통점과 차이점 비교 결과를 도출할 때는 문단별로 줄바꿈을 하라.
-
-${message.summaries.map((s, idx) => `[${message.filenames[idx]}]:\n${s}`).join('\n\n')}
-`;
-
+${message.summaries.map((s, idx) => `[${message.filenames[idx]}]:\n${s}`).join('\n\n')}`;
         fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -167,7 +180,7 @@ ${message.summaries.map((s, idx) => `[${message.filenames[idx]}]:\n${s}`).join('
                 Authorization: `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
-                model: 'gpt-4o',
+                model: 'gpt-4o-mini',
                 stream: true,
                 messages: [
                     { role: 'system', content: '당신은 한국어로 논문 비교를 도와주는 AI이다.' },

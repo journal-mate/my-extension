@@ -99,21 +99,26 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.add('active');
         });
     });
-
     summaryBtn.addEventListener('click', () => {
-        const selectedToggle = document.querySelector('.summary-toggle.active');
-        const summaryLength = selectedToggle ? selectedToggle.dataset.value : 'normal';
+        // 슬라이더 값에서 요약 길이 결정
+        const summaryRange = document.getElementById('summaryRange');
+        let summaryLength = 'normal';
+        if (summaryRange) {
+            switch (summaryRange.value) {
+                case '0': summaryLength = 'short'; break;
+                case '1': summaryLength = 'normal'; break;
+                case '2': summaryLength = 'long'; break;
+            }
+        }
 
         if (currentType === 'pdf') {
             const files = Array.from(inputArea.querySelectorAll('input[type="file"]'))
                 .map((input) => input.files[0])
                 .filter((file) => file && file.type === 'application/pdf');
-
             if (files.length === 0) {
                 showToast('PDF 파일을 업로드하세요.');
                 return;
             }
-
             Promise.all(
                 files.map((file, idx) =>
                     extractTextFromPDFAsync(file).then((text) => ({
